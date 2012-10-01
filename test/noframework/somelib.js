@@ -2,7 +2,7 @@ var Lib = function Lib() {
   this.value = true;
 }
 
-Lib.prototype.do = function do() {
+Lib.prototype.action = function action() {
   this.value2 = false;
   return this.value;
 }
