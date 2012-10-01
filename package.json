@@ -1,0 +1,22 @@
+{
+  "name": "rcover",
+  "version": "0.0.1",
+  "description": "rcover ======",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "esprima": "latest",
+    "escodegen": "latest"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/christkv/rcover.git"
+  },
+  "author": "",
+  "license": "BSD"
+}
