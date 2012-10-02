@@ -11,21 +11,18 @@ var CoverageData = function CoverageData (filename, instrumentor) {
 
 // Note that a node has been visited
 CoverageData.prototype.visit = function(node) {
-  // console.log("================ visit")
   var node = this.nodes[node.id] = (this.nodes[node.id] || {node:node, count:0})
   node.count++;
 }
 
 // Note that a node has been visited
 CoverageData.prototype.visitBlock = function(blockIndex) {
-  // console.log("================ visitBlock")
   var block = this.visitedBlocks[blockIndex] = (this.visitedBlocks[blockIndex] || {count:0})
   block.count++;
 }
 
 // Get all the nodes we did not see
 CoverageData.prototype.missing = function() {
-  // console.log("================ missing")
   // Find all the nodes which we haven't seen
   var nodes = this.nodes;
   var missing = this.instrumentor.filter(function(node) {
@@ -37,7 +34,6 @@ CoverageData.prototype.missing = function() {
 
 // Get all the nodes we did see
 CoverageData.prototype.seen = function() {  
-  // console.log("================ seen")
   // Find all the nodes we have seen
   var nodes = this.nodes;
   var seen = this.instrumentor.filter(function(node) {
@@ -49,7 +45,6 @@ CoverageData.prototype.seen = function() {
 
 // Calculate node coverage statistics
 CoverageData.prototype.blocks = function() {
-  // console.log("================ blocks")
   var totalBlocks = this.instrumentor.blockCounter;
   var numSeenBlocks = 0;
   for(var index in this.visitedBlocks) {
@@ -120,7 +115,6 @@ var explodeNodes = function(coverageData, fileData) {
 
 // Get per-line code coverage information
 CoverageData.prototype.coverage = function() {  
-  // console.log("================ coverage")
   var missingLines = this.missing();
   var fileData = this.instrumentor.source.split('\n');
   
@@ -196,10 +190,7 @@ CoverageData.prototype.coverage = function() {
 }
 
 CoverageData.prototype.prepare = function() {
-  // console.log("================ prepare")
   var store = require('./coverage_store').getStore(this.filename);
-  // console.dir(this.filename)
-  // console.dir(store)
     
   for(var index in store.nodes) {
     if (store.nodes.hasOwnProperty(index)) {
@@ -217,7 +208,6 @@ CoverageData.prototype.prepare = function() {
 // Get statistics for the entire file, including per-line code coverage
 // and block-level coverage
 CoverageData.prototype.stats = function() {
-  // console.log("================ stats")
   this.prepare();
   
   var missing = this.missing();

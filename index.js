@@ -28,14 +28,12 @@ var file = "/Users/ck/coding/projects/rcover/test/noframework/main.js"
 
 process.nextTick(function() {
   try {
-    // console.log("======================  TICK =========")
     // Load up the new argv
     var options = [];
     process.argv = ["node", file].concat(options)
     // Load the file as the main module
     Module.runMain(file, null, true)
-  }
-  catch(ex) {
+  } catch(ex) {
     console.log(ex.stack);
   }
 });
@@ -45,8 +43,6 @@ process.on(
     "exit", 
     function() {
       coverage(function(coverageData) {
-        // console.log("============== DONE")
-
         try {
           saveCoverageData(coverageData, config);
         } catch(e) {
