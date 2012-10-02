@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+// Describe all help methods
+var argv = require('optimist')
+  .usage("Rcover usage")
+  // Type of rcover run
+  .demand('t')
+  .alias('t', 'type')
+  .describe('t', 'type of run, [nodeunit, plain]')
+  // List of files or paths
+  .demand('p')
+  .alias('p', 'paths')
+  .describe('p', 'list of paths and/or files to run')
+  // Any specific test to run
+  .alias('m', 'method')
+  .describe('m', 'method to run')
+  .argv;
