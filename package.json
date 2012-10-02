@@ -1,7 +1,7 @@
 {
   "name": "rcover",
   "version": "0.0.1",
-  "description": "rcover ======",
+  "description": "rcover",
   "main": "index.js",
   "directories": {
     "test": "test"
