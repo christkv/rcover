@@ -2,21 +2,23 @@
  * Coverage Data
  *************************************************************/
 var CoverageData = function CoverageData (filename, instrumentor) {
-    this.instrumentor = instrumentor;
-    this.filename = filename;
-    this.nodes = {};
-    this.visitedBlocks = {};
-    this.source = instrumentor.source;
+  this.instrumentor = instrumentor;
+  this.filename = filename;
+  this.nodes = {};
+  this.visitedBlocks = {};
+  this.source = instrumentor.source;
 };
 
 // Note that a node has been visited
 CoverageData.prototype.visit = function(node) {
+  // console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ visit")
   var node = this.nodes[node.id] = (this.nodes[node.id] || {node:node, count:0})
   node.count++;
 }
 
 // Note that a node has been visited
 CoverageData.prototype.visitBlock = function(blockIndex) {
+  // console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ visitedBlock")
   var block = this.visitedBlocks[blockIndex] = (this.visitedBlocks[blockIndex] || {count:0})
   block.count++;
 }
@@ -34,6 +36,7 @@ CoverageData.prototype.missing = function() {
 
 // Get all the nodes we did see
 CoverageData.prototype.seen = function() {  
+  // console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ seen")
   // Find all the nodes we have seen
   var nodes = this.nodes;
   var seen = this.instrumentor.filter(function(node) {
@@ -193,13 +196,13 @@ CoverageData.prototype.prepare = function() {
   var store = require('./coverage_store').getStore(this.filename);
     
   for(var index in store.nodes) {
-    if (store.nodes.hasOwnProperty(index)) {
+    if(store.nodes.hasOwnProperty(index)) {
       this.nodes[index] = {node: this.instrumentor.nodes[index], count: store.nodes[index].count};
     }
   }
   
   for(var index in store.blocks) {
-    if (store.blocks.hasOwnProperty(index)) {
+    if(store.blocks.hasOwnProperty(index)) {
       this.visitedBlocks[index] = {count: store.blocks[index].count};
     }
   }

@@ -1,15 +1,8 @@
-var path = require('path')
-  , fs = require('fs')
-  , _ = require('underscore')
-  , instrument = require('./lib/instrument')
-  , CoverageData = require('./coverage_data').CoverageData
+var CoverageData = require('./coverage_data').CoverageData
   , addInstrumentationHeader = require('./cover').addInstrumentationHeader
   , cover = require('./cover').cover
   , saveCoverageData = require('./cover').saveCoverageData
   , Module = require('module').Module
-  , crypto = require('crypto')
-  , repl = require("repl");
-
 
 /**************************************************************
  * Execute cover

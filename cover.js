@@ -9,15 +9,15 @@ var path = require('path')
  * Helper methods
  *************************************************************/
 var addInstrumentationHeader = function(template, filename, instrumented, coverageStorePath) {
-    var template = _.template(template);
-    var renderedSource = template({
-        instrumented: instrumented,
-        coverageStorePath: coverageStorePath,
-        filename: filename,
-        source: instrumented.instrumentedSource
-    });
-    
-    return renderedSource
+  var template = _.template(template);
+  var renderedSource = template({
+    instrumented: instrumented,
+    coverageStorePath: coverageStorePath,
+    filename: filename,
+    source: instrumented.instrumentedSource
+  });
+  
+  return renderedSource
 };
 
 /**************************************************************
@@ -55,7 +55,8 @@ var cover = function(fileRegex, ignore, debugDirectory) {
     // If any of the parents of the file are to be ignored
     do {
       full = path.dirname(full);
-      if (ignore[full]) {
+
+      if(ignore[full]) {
         return originalRequire(module, filename);
       }
     } while(full !== path.dirname(full));
@@ -88,7 +89,7 @@ var cover = function(fileRegex, ignore, debugDirectory) {
   coverage.release = function() {
     require.extensions['.js'] = originalRequire;
   };
-  
+
   return coverage;
 };
 
@@ -121,23 +122,24 @@ var saveCoverageData = function(coverageData, configs, noPrecombine) {
     }
   });
 
-  // Turn it into JSON and write it out
-  var data = JSON.stringify(toSave, 2, 2);
+  return toSave;
+
+  // // Turn it into JSON and write it out
+  // var data = JSON.stringify(toSave, 2, 2);  
+  // // Get the ID for this data (md5 hash)
+  // var dataMd5 = crypto.createHash('md5');
+  // dataMd5.update(data);
+  // var dataHash = dataMd5.digest('hex');
   
-  // Get the ID for this data (md5 hash)
-  var dataMd5 = crypto.createHash('md5');
-  dataMd5.update(data);
-  var dataHash = dataMd5.digest('hex');
+  // // Make the directory
+  // var dataDirectory = path.join(path.resolve(process.cwd()), configs.dataDirectory);
+  // if(!fs.existsSync(dataDirectory)) {
+  //   fs.mkdirSync(dataDirectory, "0755");
+  // }
   
-  // Make the directory
-  var dataDirectory = path.join(path.resolve(process.cwd()), configs.dataDirectory);
-  if(!fs.existsSync(dataDirectory)) {
-    fs.mkdirSync(dataDirectory, "0755");
-  }
-  
-  // Write out the file
-  var dataFilename = path.join(dataDirectory, configs.prefix + dataHash);
-  fs.writeFileSync(dataFilename, data);
+  // // Write out the file
+  // var dataFilename = path.join(dataDirectory, configs.prefix + dataHash);
+  // fs.writeFileSync(dataFilename, data);
 };
 
 exports.addInstrumentationHeader = addInstrumentationHeader;
