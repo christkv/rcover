@@ -70,7 +70,6 @@ var cover = function(fileRegex, ignore, debugDirectory) {
     data = data.replace(/^\#\!.*/, '');
     var instrumented = instrument(data);
     var coverage = coverageData[filename] = new CoverageData(filename, instrumented);
-
     var newCode = addInstrumentationHeader(template, filename, instrumented, pathToCoverageStore);
 
     if(debugDirectory) {
@@ -96,7 +95,7 @@ var cover = function(fileRegex, ignore, debugDirectory) {
 /**************************************************************
  * Save the coverage data
  *************************************************************/
-var saveCoverageData = function(coverageData, configs, noPrecombine) {
+var transformCoverageData = function(coverageData, configs, noPrecombine) {
   // Setup the information we're going to save
   var files = {};
   var toSave = {
@@ -123,25 +122,8 @@ var saveCoverageData = function(coverageData, configs, noPrecombine) {
   });
 
   return toSave;
-
-  // // Turn it into JSON and write it out
-  // var data = JSON.stringify(toSave, 2, 2);  
-  // // Get the ID for this data (md5 hash)
-  // var dataMd5 = crypto.createHash('md5');
-  // dataMd5.update(data);
-  // var dataHash = dataMd5.digest('hex');
-  
-  // // Make the directory
-  // var dataDirectory = path.join(path.resolve(process.cwd()), configs.dataDirectory);
-  // if(!fs.existsSync(dataDirectory)) {
-  //   fs.mkdirSync(dataDirectory, "0755");
-  // }
-  
-  // // Write out the file
-  // var dataFilename = path.join(dataDirectory, configs.prefix + dataHash);
-  // fs.writeFileSync(dataFilename, data);
 };
 
 exports.addInstrumentationHeader = addInstrumentationHeader;
 exports.cover = cover;
-exports.saveCoverageData = saveCoverageData;
+exports.transformCoverageData = transformCoverageData;

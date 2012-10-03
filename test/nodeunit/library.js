@@ -1,5 +1,3 @@
-console.log("============================================ REQUIRE")
-
 var A = function A(value) {  
   if(value) {
     this.value = true;

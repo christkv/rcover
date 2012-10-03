@@ -13,7 +13,6 @@
   
   module.exports.getStore = function(filename) {
     if(!allCoverageDataDiffs[filename]) allCoverageDataDiffs[filename] = [];
-    // console.log("----------------------------------------------------------------------- " + filename)  
 
     if(coverageStore[filename]) {
       var diffCoverage = {nodes:{}, blocks:{}};
@@ -29,15 +28,10 @@
         }
 
         allCoverageDataDiffs[filename].push(diffCoverage);
-        // console.log("============================================================= diffCoverage " + filename)
-        // console.dir(diffCoverage)
-    // console.dir(allCoverageDataDiffs)
         return diffCoverage;
       } else {
         var previousDiff = allCoverageDataDiffs[filename][allCoverageDataDiffs[filename].length - 1];
         var diffCoverage = {nodes:{}, blocks:{}};
-
-        // console.log("--------------- calc diff")
 
         for(var key in coverage.nodes) {
           if(previousDiff.nodes[key] == null) {
@@ -55,22 +49,11 @@
           }
         }
 
-        // console.log("============================================================= diffCoverage " + filename)
-        // console.dir(diffCoverage)
-
         allCoverageDataDiffs[filename].push(diffCoverage);
-        // console.dir(diffCoverage)
-
-        // for(var key in coverage.blocks) {
-        //   diffCoverage.blocks[key] = {index:key, count: coverage.blocks[key].count};
-        // }
-        // console.log("======================= DIFF")
-    // console.dir(allCoverageDataDiffs)
         return diffCoverage;
       }
     } 
 
-    // console.dir(coverageStore[filename])
     return coverageStore[filename] || {};
   }
 
