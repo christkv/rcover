@@ -9,7 +9,8 @@
   "dependencies": {
     "underscore": "latest",
     "nodeunit": "latest",
-    "optimist": "latest"
+    "optimist": "latest",
+    "jade": "latest"
   },
   "devDependencies": {
   },

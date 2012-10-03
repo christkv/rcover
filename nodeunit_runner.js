@@ -6,7 +6,8 @@ var fs = require('fs')
   , addInstrumentationHeader = require('./cover').addInstrumentationHeader
   , cover = require('./cover').cover
   , transformCoverageData = require('./cover').transformCoverageData
-  , Module = require('module').Module;
+  , Module = require('module').Module
+  , jade = require('jade');
 
 /**************************************************************
  * Execute cover
@@ -19,6 +20,7 @@ var config = {
   , ignore: ignore_paths
   , regexp: null
   , dataDirectory: ".coverage_data"
+  , outputDirectory: "rcover_html"
   , prefix: "rcover_"
 }
 
@@ -94,18 +96,23 @@ var _run = function _run(self, files, method, config) {
     fs.mkdirSync(dataDirectory, "0755");    
   }
 
+  // Make the output directory
+  var outputDirectory = path.join(path.resolve(process.cwd()), config.outputDirectory);
+  if(!fs.existsSync(outputDirectory)) {
+    fs.mkdirSync(outputDirectory, "0755");
+  } else {
+    // Remove the data directory
+    rmdirRecursiveSync(path.join(path.resolve(process.cwd()), config.outputDirectory));
+    fs.mkdirSync(outputDirectory, "0755");    
+  }
+
   // Set up an execution context
   var opts = {
     testspec: method,
     testFullSpec: null,
-    moduleStart: function (name) {
-    },
-
-    moduleDone: function (name, assertions) {
-    },
-
-    testStart: function () {
-    },
+    moduleStart: function (name) {},
+    moduleDone: function (name, assertions) {},
+    testStart: function () {},
 
     testDone: function (name, assertions) {
       // Get the coverage data
@@ -196,29 +203,37 @@ var _report = function _report(self, config) {
     }
   }
 
+  // console.dir(coverageData)
+
   // We now have all the data read in from the coverage run so we can generate the code overview
-  console.dir(coverageData)
-
-
+  // Render the results
+  jade.renderFile(__dirname + "/templates/html/report.jade", 
+    { pretty: true, 
+      debug: false, 
+      compileDebug: false,
+      coverageData: coverageData
+    }, function(err, str){
+      if (err) throw err;
+      fs.writeFileSync(config.outputDirectory + "/index.html", str, 'ascii');
+    });
 }
 
 // Delete a directory recursively
 var rmdirRecursiveSync = function(dirPath) {
-    var files = fs.readdirSync(dirPath);
-    
-    for(var i = 0; i < files.length; i++) {
-        var filePath = path.join(dirPath, files[i]);
-        var file = fs.statSync(filePath);
+  var files = fs.readdirSync(dirPath);
+  
+  for(var i = 0; i < files.length; i++) {
+    var filePath = path.join(dirPath, files[i]);
+    var file = fs.statSync(filePath);
 
-        if (file.isDirectory()) {
-            rmdirRecursiveSync(filePath);
-        }
-        else {
-            fs.unlinkSync(filePath);
-        }
+    if(file.isDirectory()) {
+      rmdirRecursiveSync(filePath);
+    } else {
+      fs.unlinkSync(filePath);
     }
+  }
 
-    fs.rmdirSync(dirPath);
+  fs.rmdirSync(dirPath);
 };
 
 exports.NodeunitRunner = NodeunitRunner;
