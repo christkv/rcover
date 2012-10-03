@@ -7,19 +7,17 @@ body
       - index = index + 1
       tr
         -if(missing.indexOf(index) != -1)        
-          td(bgcolor="red")
+          td(bgcolor="red", valign="top")
             pre=index
-          td(bgcolor="red")
+          td(bgcolor="red", valign="top")
             pre=line
         -else
-          td
+          td(valign="top")
             pre=index
-          td
+          td(valign="top")
             pre=line
         td
           -for data in coverage_data
             - if(data.data.stats.lines.map(function(r) { return r.lineno; }).indexOf(index) == -1)
-              = data.test_file
-              = data.test_method
-            br
-            br
+              = data.test_file + "[" + data.test_method + "]"
+              br
