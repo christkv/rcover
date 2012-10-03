@@ -84,12 +84,14 @@ var _run = function _run(self, files, method, config) {
     testsByFile[files[i].file] = tests;
   }
 
-  // Remove the data directory
-  rmdirRecursiveSync(path.resolve(process.cwd()), config.dataDirectory);
   // Make the directory
   var dataDirectory = path.join(path.resolve(process.cwd()), config.dataDirectory);
   if(!fs.existsSync(dataDirectory)) {
     fs.mkdirSync(dataDirectory, "0755");
+  } else {
+    // Remove the data directory
+    rmdirRecursiveSync(path.join(path.resolve(process.cwd()), config.dataDirectory));
+    fs.mkdirSync(dataDirectory, "0755");    
   }
 
   // Set up an execution context
