@@ -185,10 +185,10 @@ var _report = function _report(self, config) {
       // Read in all the entries
       var files = fs.readdirSync(config.dataDirectory + "/" + entries[i]);
       for(var j = 0; j < files.length; j++) {
+
         if(fs.statSync(config.dataDirectory + "/" + entries[i] + "/" + files[j]).isFile()) {
           // Read and parse the data
           var data = JSON.parse(fs.readFileSync(config.dataDirectory + "/" + entries[i] + "/" + files[j], "utf8"));
-          console.dir(data)
           // Let's find all the covered data and add the correct measurements for them
           for(key in data.files) {
             // Add coverage data for this entry
@@ -207,7 +207,7 @@ var _report = function _report(self, config) {
 
   // We now have all the data read in from the coverage run so we can generate the code overview
   // Render the results
-  jade.renderFile(__dirname + "/templates/html/report.jade", 
+  jade.renderFile(__dirname + "/templates/html/index.jade", 
     { pretty: true, 
       debug: false, 
       compileDebug: false,
@@ -216,6 +216,46 @@ var _report = function _report(self, config) {
       if (err) throw err;
       fs.writeFileSync(config.outputDirectory + "/index.html", str, 'ascii');
     });
+
+  // Process all the modules
+  for(var key in coverageData) {
+    // // Grab the data object for the 
+    var data = coverageData[key];
+    var test_file = data[0].test_file;
+    var test_method = data[0].test_method;
+    var sources = data[0].data.stats.source.split(/\n/);
+
+    // Missing lines
+    var missing = [];
+    // Preprocess some of the data (a list of all missing lines)
+    for(var i = 0; i < data.length; i++) {
+      if(missing.length == 0) {
+        missing = data[i].data.stats.lines.map(function(r) { return r.lineno; });
+      } else {
+        missing_lines = data[i].data.stats.lines.map(function(r) { return r.lineno; });
+        missing = intersect_safe(missing, missing_lines);
+      }      
+    }
+
+
+    console.dir(data[0])
+    // console.dir(missing)
+
+    jade.renderFile(__dirname + "/templates/html/module.jade", 
+      { pretty: true, 
+        debug: false, 
+        compileDebug: false,
+        module: key,
+        sources: sources,
+        missing: missing,
+        test_file: test_file,
+        test_method: test_method,
+        coverage_data: data
+      }, function(err, str){
+        if (err) throw err;
+        fs.writeFileSync(config.outputDirectory + "/" + key.replace(/\/|\.| /g, "_") + ".html", str, 'ascii');
+      });    
+  }
 }
 
 // Delete a directory recursively
@@ -235,6 +275,35 @@ var rmdirRecursiveSync = function(dirPath) {
 
   fs.rmdirSync(dirPath);
 };
+
+/* finds the intersection of 
+ * two arrays in a simple fashion.  
+ *
+ * PARAMS
+ *  a - first array, must already be sorted
+ *  b - second array, must already be sorted
+ *
+ * NOTES
+ *
+ *  Should have O(n) operations, where n is 
+ *    n = MIN(a.length(), b.length())
+ */
+function intersect_safe(a, b) {
+  var ai=0, bi=0;
+  var result = new Array();
+
+  while(ai < a.length && bi < b.length) {
+    if(a[ai] < b[bi] ){ ai++; }
+    else if (a[ai] > b[bi] ){ bi++; }
+    else {
+      result.push(a[ai]);
+      ai++;
+      bi++;
+    }
+  }
+
+  return result;
+}
 
 exports.NodeunitRunner = NodeunitRunner;
 

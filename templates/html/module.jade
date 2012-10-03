@@ -1,0 +1,25 @@
+- var index = 0
+html
+  title=module
+body
+  table(border=1)
+    -for line in sources
+      - index = index + 1
+      tr
+        -if(missing.indexOf(index) != -1)        
+          td(bgcolor="red")
+            pre=index
+          td(bgcolor="red")
+            pre=line
+        -else
+          td
+            pre=index
+          td
+            pre=line
+        td
+          -for data in coverage_data
+            - if(data.data.stats.lines.map(function(r) { return r.lineno; }).indexOf(index) == -1)
+              = data.test_file
+              = data.test_method
+            br
+            br
