@@ -1,31 +1,91 @@
-h1= "Overview of reverse coverage for your tests, Fight test rot"
-h2= "Answer the question: What tests are running against what code"
+<!DOCTYPE html>
+head
+  link(href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-combined.min.css", rel="stylesheet")
+  script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js")
+  style
+    th {
+      text-align: left;
+    }
 
-style
-  th {
-    text-align: left;
-  }
+    td {
+      border: 1px solid black;
+    }
 
-  table { 
-    border-collapse: collapse;
-  }
+    html, body {
+      height: 100%;
+    }
 
-  td {
-    border: 1px solid black;
-  }
+    footer {
+      color: black;
+      background: lightgray;
+      padding: 17px 0 18px 0;
+      border-top: 1px solid gray;
+    }
 
-table(width="100%")
-  thead
-    th= "Module"
-    th= "#tests covering"
-    th= "Total coverage %"
-  tbody
-    - for(key in coverageData) 
-      tr
-        td(width="90%")
-          a(href=key.replace(/\/|\.| /g, "_") + ".html")=key
-        td(width="10%")=coverageData[key].length
-        td(width="0%", nowrap=true)
-          - for(index in coverageData[key])
-            = Math.round(coverageData[key][index].data.stats.percentage * 100 * 100) / 100
-            = " "
+    footer a {
+      color: #999;
+    }
+
+    footer a:hover {
+      color: #efefef;
+    }
+
+    .wrapper {
+      min-height: 100%;
+      height: auto !important;
+      height: 100%;
+      margin: 0 auto -63px;
+    }
+
+    .push {
+      height: 63px;
+    }
+
+    /* not required for sticky footer; just pushes hero down a bit */
+    .wrapper > .container {
+        padding-top: 60px;
+    }    
+body
+  div(class="navbar navbar-fixed-top")
+    div(class="navbar-inner")
+      div(class="container")
+        a(href="./index.html", class="brand")= "RCover"
+        ul(class="nav")
+          li
+            a(href="./index.html")= "Home"
+          li(class="divider-vertical")  
+          li
+            a(href="https://github.com/christkv/rcover")= "Github"
+          li(class="divider-vertical")
+          li
+            a(href="https://github.com/christkv/rcover/issues")= "Issues"
+        ul(class="nav pull-right")
+          li
+            a(href="")= "Register"
+          li
+            a(href="")= "Login"
+
+  div(class="container")
+    div(class="row")
+      div(class="span12")
+
+        header(class="hero-unit")
+          h1= "Reverse Coverage"
+          h2= "Answer the question: What tests are running against what code"
+
+        table(width="100%", class="table")
+          thead
+            th= "Modules"
+            th(nowrap=true)= "#Tests covering"
+            th= "Coverages%"
+          tbody
+            - for(key in coverageData) 
+              tr
+                td(width="90%")
+                  a(href=key.replace(/\/|\.| /g, "_") + ".html")=key
+                td(width="10%")=coverageData[key].length
+                td(width="0%", nowrap=true)
+                  - for(index in coverageData[key])
+                    = Math.round(coverageData[key][index].data.stats.percentage * 100 * 100) / 100
+                    = " "
+  script(src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js")

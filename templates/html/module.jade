@@ -1,6 +1,7 @@
 - var index = 0
 html
   title=module  
+  link(href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-combined.min.css", rel="stylesheet")
   script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js")
   style(type="text/css")
     .clear_line {
@@ -18,53 +19,113 @@ html
     .index {
       background-color: lightgray;
     }
-body
-  a(href="./index.html")="Index"
-  h1=module
-  table(border=0, width="100%")
-    -for line in sources
-      - index = index + 1
-      tr
-        td(valign="top", id="_index_" + index, class="index")
-          pre=index
-        td(valign="top", id="_line_" + index, width="100%")
-          pre=line
-        -if(index == 1)          
-          - var inputid = 0
-          td(rowspan=sources.length, valign="top", nowrap="true")
-            hr
-            h3= "Coverage"
-            hr
-            table(width="100%", border="1")
-              tr
-                td(width="75%")="Percentage"
-                td(id="percentage", width="25%")
-              tr
-                td="Missed"
-                td(id="missing")
-              tr
-                td="Seen"
-                td(id="seen")
-              tr
-                td="Total"
-                td(id="total")
 
-            hr
-            h3= "Tests"
-            hr
+    table {
+      border-color: white;
+    }
 
-            -for data in coverage_data
-              - if(data.data.stats.lines.map(function(r) { return r.lineno; }).indexOf(index) == -1)
-                input(id="_input_" + inputid, type="checkbox", onclick="show_coverage('_input_" + inputid + "', '" + data.test_file + "', '" + data.test_method + "')")              
-                span
-                  strong
-                    = data.test_file
-                  br
-                  = "&nbsp;&nbsp;&nbsp;&nbsp;[" + data.test_method + "]"
-                br
-              - inputid = inputid + 1
+    table td {
+      margin: 0px 0px 0px 0px;
+      padding: 0px 5px 0px 5px;
+    }
+
+    table tr {
+      margin: 0px 0px 0px 0px;
+      padding: 0px 0px 0px 0px;
+    }
+
+    pre {
+      margin: 0px 5px 0px 5px;     
+      padding: 0px 0px 0px 0px;
+      background-color:transparent;
+      border: 0px solid;
+      word-break: normal;
+    }
+
+    hr {
+      margin: 5px 0px 5px 0px;
+      padding: 0px 0px 0px 0px;
+      border-top: 0px solid black;
+      border-bottom: 1px solid black;
+    }
+
+    .sub_heading_h4 {
+      margin: 0px 0px 0px 0px;
+      padding: 0px 0px 0px 0px;    
+    }
+
+  body
+  div(class="navbar navbar-fixed-top")
+    div(class="navbar-inner")
+      div(class="container")
+        a(href="./index.html", class="brand")= "RCover"
+        ul(class="nav")
+          li
+            a(href="./index.html")= "Home"
+          li(class="divider-vertical")  
+          li
+            a(href="https://github.com/christkv/rcover")= "Github"
+          li(class="divider-vertical")
+          li
+            a(href="https://github.com/christkv/rcover/issues")= "Issues"
+        ul(class="nav pull-right")
+          li
+            a(href="")= "Register"
+          li
+            a(href="")= "Login"
+  div(class="container")
+    div(class="row")
+      div(class="span12")
+
+        header(class="hero-unit")
+          h3= "Module"
+          h4= module
+        #mytable
+          table(border=0, width="100%", class="source_table")
+            -for line in sources
+              - index = index + 1
+              tr
+                td(valign="top", id="_index_" + index, class="index")
+                  pre=index
+                td(valign="top", id="_line_" + index, width="100%")
+                  pre=line
+                -if(index == 1)          
+                  - var inputid = 0
+                  td(rowspan=sources.length, valign="top", nowrap="true")
+                    hr
+                    strong= "Coverage"
+                    hr
+                    table(width="100%", border="1")
+                      tr
+                        td(width="75%")="Percentage"
+                        td(id="percentage", width="25%")
+                      tr
+                        td="Missed"
+                        td(id="missing")
+                      tr
+                        td="Seen"
+                        td(id="seen")
+                      tr
+                        td="Total"
+                        td(id="total")
+
+                    hr
+                    strong= "Tests"
+                    hr
+
+                    -for data in coverage_data
+                      - if(data.data.stats.lines.map(function(r) { return r.lineno; }).indexOf(index) == -1)
+                        input(id="_input_" + inputid, type="checkbox", onclick="show_coverage('_input_" + inputid + "', '" + data.test_file + "', '" + data.test_method + "')")
+                        span
+                          strong
+                            = data.test_file
+                          br
+                          = "&nbsp;&nbsp;&nbsp;&nbsp;[" + data.test_method + "]"
+                        br
+                      - inputid = inputid + 1
   - var data_json_string = JSON.stringify(coverage_data)
   - var sources_json_string = JSON.stringify(sources)
+  script(src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js")
   script!="var coverage_data = " + data_json_string
   script!="var sources = " + sources_json_string
   script
