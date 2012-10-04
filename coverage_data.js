@@ -239,12 +239,15 @@ CoverageData.prototype.stats = function() {
   var numSeenLines = numLines - numMissingLines;
   var percentageCovered = numSeenLines / numLines;
       
+  // console.log("===============================================================")
+  // console.dir(this.seen()[0])
+
   return {
     percentage: percentageCovered,
     lines: linesInfo,
     missing: numMissingLines,
     seen: numSeenLines,
-    seen_lines: this.seen().map(function(node) { return node.loc.start.line; }),
+    seen_lines: this.seen().map(function(node) { return {s: node.loc.start.line, e: node.loc.end.line} }),
     total: numLines,
     coverage: this.coverage(),
     source: this.source,

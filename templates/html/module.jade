@@ -14,18 +14,45 @@ html
     .seen_lines {
       background-color: lightgreen;
     }
+
+    .index {
+      background-color: lightgray;
+    }
 body
-  table(border=1, width="100%")
+  a(href="./index.html")="Index"
+  h1=module
+  table(border=0, width="100%")
     -for line in sources
       - index = index + 1
       tr
-        td(valign="top", id="_index_" + index)
+        td(valign="top", id="_index_" + index, class="index")
           pre=index
         td(valign="top", id="_line_" + index, width="100%")
           pre=line
-        -if(index == 1)
+        -if(index == 1)          
           - var inputid = 0
           td(rowspan=sources.length, valign="top", nowrap="true")
+            hr
+            h3= "Coverage"
+            hr
+            table(width="100%", border="1")
+              tr
+                td(width="75%")="Percentage"
+                td(id="percentage", width="25%")
+              tr
+                td="Missed"
+                td(id="missing")
+              tr
+                td="Seen"
+                td(id="seen")
+              tr
+                td="Total"
+                td(id="total")
+
+            hr
+            h3= "Tests"
+            hr
+
             -for data in coverage_data
               - if(data.data.stats.lines.map(function(r) { return r.lineno; }).indexOf(index) == -1)
                 input(id="_input_" + inputid, type="checkbox", onclick="show_coverage('_input_" + inputid + "', '" + data.test_file + "', '" + data.test_method + "')")              
@@ -44,7 +71,7 @@ body
     function show_coverage(_input_id, _test_file, _test_method) {
       // Clear out all the lines
       for(var i = 1; i <= sources.length; i++) {
-        $('#_index_' + i).removeClass("missing_lines seen_lines");
+        //- $('#_index_' + i).removeClass("missing_lines seen_lines");
         $('#_line_' + i).removeClass("missing_lines seen_lines");
       }
 
@@ -72,19 +99,24 @@ body
 
         // If it's the correct file/method show them
         if(test_file == _test_file && test_method == _test_method) {
+          // Set statistics
+          $("#missing").html(missing);
+          $("#seen").html(seen);
+          $("#total").html(total);
+          $("#percentage").html((Math.round(percentage * 100 * 100) / 100).toString() + "%");
+
           // Add missing lines
           for(var i = 0; i < lines.length; i++) {
-            $('#_index_' + lines[i].lineno).addClass("missing_lines");
+            //- $('#_index_' + lines[i].lineno).addClass("missing_lines");
             $('#_line_' + lines[i].lineno).addClass("missing_lines");            
           }
 
           // Add seen lines
           for(var i = 0; i < seen_lines.length; i++) {
-            $('#_index_' + seen_lines[i]).addClass("seen_lines");
-            $('#_line_' + seen_lines[i]).addClass("seen_lines");                      
+            //- $('#_index_' + seen_lines[i]).addClass("seen_lines");
+            $('#_line_' + seen_lines[i].s).addClass("seen_lines");                      
           }
           break;
         }
       }
     }
-

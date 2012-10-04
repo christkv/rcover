@@ -1,0 +1,31 @@
+h1= "Overview of reverse coverage for your tests, Fight test rot"
+h2= "Answer the question: What tests are running against what code"
+
+style
+  th {
+    text-align: left;
+  }
+
+  table { 
+    border-collapse: collapse;
+  }
+
+  td {
+    border: 1px solid black;
+  }
+
+table(width="100%")
+  thead
+    th= "Module"
+    th= "#tests covering"
+    th= "Total coverage %"
+  tbody
+    - for(key in coverageData) 
+      tr
+        td(width="90%")
+          a(href=key.replace(/\/|\.| /g, "_") + ".html")=key
+        td(width="10%")=coverageData[key].length
+        td(width="0%", nowrap=true)
+          - for(index in coverageData[key])
+            = Math.round(coverageData[key][index].data.stats.percentage * 100 * 100) / 100
+            = " "
