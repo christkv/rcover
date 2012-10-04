@@ -1,23 +1,90 @@
 - var index = 0
 html
-  title=module
+  title=module  
+  script(src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js")
+  style(type="text/css")
+    .clear_line {
+      background-color: white;
+    }
+
+    .missing_lines {
+      background-color: lightcoral;
+    }
+
+    .seen_lines {
+      background-color: lightgreen;
+    }
 body
-  table(border=1)
+  table(border=1, width="100%")
     -for line in sources
       - index = index + 1
       tr
-        -if(missing.indexOf(index) != -1)        
-          td(bgcolor="red", valign="top")
-            pre=index
-          td(bgcolor="red", valign="top")
-            pre=line
-        -else
-          td(valign="top")
-            pre=index
-          td(valign="top")
-            pre=line
-        td
-          -for data in coverage_data
-            - if(data.data.stats.lines.map(function(r) { return r.lineno; }).indexOf(index) == -1)
-              = data.test_file + "[" + data.test_method + "]"
-              br
+        td(valign="top", id="_index_" + index)
+          pre=index
+        td(valign="top", id="_line_" + index, width="100%")
+          pre=line
+        -if(index == 1)
+          - var inputid = 0
+          td(rowspan=sources.length, valign="top", nowrap="true")
+            -for data in coverage_data
+              - if(data.data.stats.lines.map(function(r) { return r.lineno; }).indexOf(index) == -1)
+                input(id="_input_" + inputid, type="checkbox", onclick="show_coverage('_input_" + inputid + "', '" + data.test_file + "', '" + data.test_method + "')")              
+                span
+                  strong
+                    = data.test_file
+                  br
+                  = "&nbsp;&nbsp;&nbsp;&nbsp;[" + data.test_method + "]"
+                br
+              - inputid = inputid + 1
+  - var data_json_string = JSON.stringify(coverage_data)
+  - var sources_json_string = JSON.stringify(sources)
+  script!="var coverage_data = " + data_json_string
+  script!="var sources = " + sources_json_string
+  script
+    function show_coverage(_input_id, _test_file, _test_method) {
+      // Clear out all the lines
+      for(var i = 1; i <= sources.length; i++) {
+        $('#_index_' + i).removeClass("missing_lines seen_lines");
+        $('#_line_' + i).removeClass("missing_lines seen_lines");
+      }
+
+      // Uncheck all the checkboxes
+      $(':checkbox:checked').removeAttr('checked');
+      // Set our current one
+      $('#' + _input_id).attr('checked','checked');
+
+      // Locate the test we want to show
+      for(var index in coverage_data) {
+        var data = coverage_data[index];
+        // Unpack the object identifiers
+        var test_file = data.test_file;
+        var test_method = data.test_method;
+        // Unpack the stats object
+        var blocks = data.data.stats.blocks;
+        var coverage = data.data.stats.coverage;
+        var lines = data.data.stats.lines;
+        var seen_lines = data.data.stats.seen_lines;
+        // Get all the statistics
+        var missing = data.data.stats.missing;
+        var percentage = data.data.stats.percentage;
+        var seen = data.data.stats.seen;
+        var total = data.data.stats.total;
+
+        // If it's the correct file/method show them
+        if(test_file == _test_file && test_method == _test_method) {
+          // Add missing lines
+          for(var i = 0; i < lines.length; i++) {
+            $('#_index_' + lines[i].lineno).addClass("missing_lines");
+            $('#_line_' + lines[i].lineno).addClass("missing_lines");            
+          }
+
+          // Add seen lines
+          for(var i = 0; i < seen_lines.length; i++) {
+            $('#_index_' + seen_lines[i]).addClass("seen_lines");
+            $('#_line_' + seen_lines[i]).addClass("seen_lines");                      
+          }
+          break;
+        }
+      }
+    }
+

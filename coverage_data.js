@@ -11,21 +11,18 @@ var CoverageData = function CoverageData (filename, instrumentor) {
 
 // Note that a node has been visited
 CoverageData.prototype.visit = function(node) {
-  // console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ visit")
   var node = this.nodes[node.id] = (this.nodes[node.id] || {node:node, count:0})
   node.count++;
 }
 
 // Note that a node has been visited
 CoverageData.prototype.visitBlock = function(blockIndex) {
-  // console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ visitedBlock")
   var block = this.visitedBlocks[blockIndex] = (this.visitedBlocks[blockIndex] || {count:0})
   block.count++;
 }
 
 // Get all the nodes we did not see
 CoverageData.prototype.missing = function() {
-  // Find all the nodes which we haven't seen
   var nodes = this.nodes;
   var missing = this.instrumentor.filter(function(node) {
     return !nodes[node.id];
@@ -36,7 +33,6 @@ CoverageData.prototype.missing = function() {
 
 // Get all the nodes we did see
 CoverageData.prototype.seen = function() {  
-  // console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ seen")
   // Find all the nodes we have seen
   var nodes = this.nodes;
   var seen = this.instrumentor.filter(function(node) {
@@ -248,6 +244,7 @@ CoverageData.prototype.stats = function() {
     lines: linesInfo,
     missing: numMissingLines,
     seen: numSeenLines,
+    seen_lines: this.seen().map(function(node) { return node.loc.start.line; }),
     total: numLines,
     coverage: this.coverage(),
     source: this.source,

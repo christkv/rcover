@@ -222,7 +222,7 @@ var _report = function _report(self, config) {
     // // Grab the data object for the 
     var data = coverageData[key];
     var test_file = data[0].test_file;
-    var test_method = data[0].test_method;
+    var test_method = data[0].test_method;    
     var sources = data[0].data.stats.source.split(/\n/);
 
     // Missing lines
@@ -237,9 +237,8 @@ var _report = function _report(self, config) {
       }      
     }
 
-
-    console.dir(data[0])
-    // console.dir(missing)
+    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    console.dir(data[0].data.stats)
 
     jade.renderFile(__dirname + "/templates/html/module.jade", 
       { pretty: true, 
