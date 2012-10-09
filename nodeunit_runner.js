@@ -48,9 +48,6 @@ var NodeunitRunner = function NodeunitRunner(paths, ignore, method, options) {
   this.method = method;
   this.options = options;
   
-  console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-  console.dir(ignore)
-
   // Add all the paths to the coverage ignore
   if(Array.isArray(ignore) && ignore.length > 0) {
     config.ignore = config.ignore.concat(ignore);

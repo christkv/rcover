@@ -85,7 +85,7 @@ html
             -for line in sources
               - index = index + 1
               tr
-                td(valign="top", id="_index_" + index, class="index")
+                td(valign="top", id="_index_" + index, class="index", onclick="show_covering_methods(" + index + ");")
                   pre=index
                 td(valign="top", id="_line_" + index, width="100%")
                   pre=line
@@ -129,10 +129,13 @@ html
   script!="var coverage_data = " + data_json_string
   script!="var sources = " + sources_json_string
   script
+    function show_covering_methods(index) {
+      console.log("============== show_covering_methods :: " + index);
+    }
+
     function show_coverage(_input_id, _test_file, _test_method) {
       // Clear out all the lines
       for(var i = 1; i <= sources.length; i++) {
-        //- $('#_index_' + i).removeClass("missing_lines seen_lines");
         $('#_line_' + i).removeClass("missing_lines seen_lines");
       }
 
@@ -160,6 +163,7 @@ html
 
         // If it's the correct file/method show them
         if(test_file == _test_file && test_method == _test_method) {
+
           // Set statistics
           $("#missing").html(missing);
           $("#seen").html(seen);
@@ -168,15 +172,14 @@ html
 
           // Add missing lines
           for(var i = 0; i < lines.length; i++) {
-            //- $('#_index_' + lines[i].lineno).addClass("missing_lines");
             $('#_line_' + lines[i].lineno).addClass("missing_lines");            
           }
 
           // Add seen lines
           for(var i = 0; i < seen_lines.length; i++) {
-            //- $('#_index_' + seen_lines[i]).addClass("seen_lines");
             $('#_line_' + seen_lines[i].s).addClass("seen_lines");                      
           }
+          
           break;
         }
       }
