@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-var NodeunitRunner = require('../nodeunit_runner').NodeunitRunner;
+var NodeunitRunner = require('../nodeunit_runner').NodeunitRunner,
+  fs = require('fs');
 
 // Describe all help methods
 var argv = require('optimist')
@@ -12,6 +13,9 @@ var argv = require('optimist')
   .demand('p')
   .alias('p', 'paths')
   .describe('p', 'list of paths and/or files to run path1,path2,path3')
+  // List of ignore filters
+  .alias('i', 'ignore')
+  .describe('i', 'list of regular expressions excluding files node_module,test')
   // Any specific test to run
   .alias('m', 'method')
   .describe('m', 'method to run')
@@ -29,11 +33,26 @@ if(!argv.type.match(/^nodeunit$|^plain$/)) {
 
 // The runner for the library
 var runner = null;
+// Map the files
+var final_files = argv.paths.split(/\,/).map(function(m) { 
+  var file = m.trim();
+  try {
+    fs.statSync(process.cwd() + "/" + file);
+    file = process.cwd() + "/" + file;
+  } catch (err) {}
+  return file; 
+});
+
+// Map the ignore files
+var ignore = argv.ignore.split(/\,/).map(function(m) { 
+  return m.trim();
+});
+
 // Allright we have a valid type build the correct object
 // to run the cover test
 switch(argv.type) {
   case 'nodeunit':
-    runner = new NodeunitRunner(argv.paths.split(/\,/).map(function(m) { return m.trim(); }), argv.method, argv);
+    runner = new NodeunitRunner(final_files, ignore, argv.method, argv);
     break;
   case 'plain':
     break;

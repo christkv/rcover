@@ -12,12 +12,12 @@ var fs = require('fs')
 /**************************************************************
  * Execute cover
  *************************************************************/
-var ignore_paths = {}
-ignore_paths[__dirname + "/node_modules"] = true;
+var ignore_regexps = [/node_modules/];
+// ignore_paths[__dirname + "/node_modules"] = true;
 
 var config = {
     debugDirectory: null
-  , ignore: ignore_paths
+  , ignore: ignore_regexps
   , regexp: null
   , dataDirectory: ".coverage_data"
   , outputDirectory: "rcover_html"
@@ -25,7 +25,7 @@ var config = {
 }
 
 // Run cover
-var coverage = cover(config.regexp, config.ignore, config.debugDirectory);
+var coverage = null;
 var store = require('./coverage_store');
 
 /**************************************************************
@@ -43,10 +43,23 @@ var options = {
   "assertion_suffix": "\u001B[39m"
 }
 
-var NodeunitRunner = function NodeunitRunner(paths, method, options) {
+var NodeunitRunner = function NodeunitRunner(paths, ignore, method, options) {
   this.paths = paths;
   this.method = method;
   this.options = options;
+  
+  console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+  console.dir(ignore)
+
+  // Add all the paths to the coverage ignore
+  if(Array.isArray(ignore) && ignore.length > 0) {
+    config.ignore = config.ignore.concat(ignore);
+  } else {
+    config.ignore = config.ignore.concat(this.paths);
+  }
+
+  // Set up the coverage
+  coverage = cover(config.regexp, config.ignore, config.debugDirectory);
   // Get the test runner used
   this.testrunner = nodeunit.reporters.default;
 }
@@ -59,9 +72,9 @@ NodeunitRunner.prototype.run = function() {
   for(var i = 0; i < this.paths.length; i++) {
     var file = this.paths[i];
     // Stat the object
-    var stat = fs.statSync(__dirname + "/" + file);
+    var stat = fs.statSync(file);
     if(stat.isFile()) {
-      this.finalFiles.push({file: file, path: __dirname + "/" + file});
+      this.finalFiles.push({file: file, path: file});
     }
   }
 
@@ -115,6 +128,14 @@ var _run = function _run(self, files, method, config) {
     testStart: function () {},
 
     testDone: function (name, assertions) {
+      var currentPath = process.cwd();
+      // Lookup the belonging file for this test
+      for(var key in testsByFile) {
+        if(testsByFile[key].indexOf(name) != null) {
+          console.log("executing:: [" + key.replace(currentPath, '') + "] :: " + name);
+        }
+      }
+
       // Get the coverage data
       coverage(function(coverageData) {        
         try {
@@ -203,71 +224,13 @@ var _report = function _report(self, config) {
     }
   }
 
-  var sum_coverage = function(items) {
-    var numberOfSeenLines = {};
-    var duplicates = 0;    
-    var numberOfMissedLines = {};
-    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-
-    for(var i = 0; i < items.length; i++) {
-      var lines = items[i].data.stats.lines;
-      var seen_lines = items[i].data.stats.seen_lines;
-
-      for(var i = 0; i < seen_lines.length; i++) {
-        var key = seen_lines[i].s + "_" + seen_lines[i].e;
-        console.dir(key)
-        if(!numberOfSeenLines[key]) numberOfSeenLines[key] = seen_lines;
-        else duplicates = duplicates + 1;
-      }
-
-
-
-      // // console.log("===== seen_lines :: " + seen_lines.length)
-      // console.dir(items[i].test_method)
-      // console.dir(seen_lines)
-
-      // // Get all seen lines
-      // for(var j = 0; j < seen_lines.length; j++) {
-      //   if(numberOfSeenLines.length == 0) {
-      //     numberOfSeenLines.push(seen_lines[j]);
-      //   } else {
-      //     for(var k = 0, len = numberOfSeenLines.length; k < len; k++) {
-      //       console.dir(numberOfSeenLines[k])
-      //       console.dir(seen_lines[j])
-
-      //       if(numberOfSeenLines[k].s != seen_lines[j].s 
-      //         || numberOfSeenLines[k].e != seen_lines[j].e)
-      //         numberOfSeenLines.push(seen_lines[j])
-      //     }          
-      //   }
-
-      //   // if(numberOfSeenLines.indexOf(seen_lines[j]) == -1)
-      //   //   numberOfSeenLines.push(seen_lines[j]);
-      // }
-
-      // // Get all unseen lines
-      // for(var j = 0; j < lines.length; j++) {
-      //   if(numberOfMissedLines.indexOf(lines[j].lineno) == -1)
-      //     numberOfMissedLines.push(lines[j].lineno);
-      // }
-    }
-
-    console.log("=========================================================")
-    console.log("numberOfSeenLines :: " + (Object.keys(numberOfSeenLines).length + duplicates))
-    console.log("numberOfMissedLines :: " + Object.keys(numberOfMissedLines).length)
-    
-    // return (numberOfMissedLines.length/numberOfSeenLines.length) * 100;
-    return 0;
-  }
-
   // We now have all the data read in from the coverage run so we can generate the code overview
   // Render the results
   jade.renderFile(__dirname + "/templates/html/index.jade", 
     { pretty: true, 
       debug: false, 
       compileDebug: false,
-      coverageData: coverageData,
-      sum_coverage: sum_coverage
+      coverageData: coverageData
     }, function(err, str){
       if (err) throw err;
       fs.writeFileSync(config.outputDirectory + "/index.html", str, 'ascii');
@@ -292,9 +255,6 @@ var _report = function _report(self, config) {
         missing = intersect_safe(missing, missing_lines);
       }      
     }
-
-    // console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-    // console.dir(data[0].data.stats)
 
     jade.renderFile(__dirname + "/templates/html/module.jade", 
       { pretty: true, 

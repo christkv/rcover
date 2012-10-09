@@ -59,11 +59,6 @@ body
           li(class="divider-vertical")
           li
             a(href="https://github.com/christkv/rcover/issues")= "Issues"
-        ul(class="nav pull-right")
-          li
-            a(href="")= "Register"
-          li
-            a(href="")= "Login"
 
   div(class="container")
     div(class="row")
@@ -77,15 +72,10 @@ body
           thead
             th= "Modules"
             th(nowrap=true)= "#Tests covering"
-            th= "Coverages%"
           tbody
             - for(key in coverageData) 
               tr
                 td(width="90%")
                   a(href=key.replace(/\/|\.| /g, "_") + ".html")=key
                 td(width="10%")=coverageData[key].length
-                td(width="0%", nowrap=true)
-                  - for(index in coverageData[key])
-                    = Math.round(coverageData[key][index].data.stats.percentage * 100 * 100) / 100
-                    = " "
   script(src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js")

@@ -28,7 +28,7 @@ var cover = function(fileRegex, ignore, debugDirectory) {
   var coverageData = {};
   var match = null;
   
-  ignore = ignore || {};
+  ignore = ignore || [];
   
   if(fileRegex instanceof RegExp) {
     match = regex;
@@ -48,16 +48,22 @@ var cover = function(fileRegex, ignore, debugDirectory) {
     
     // If the specific file is to be ignored
     var full = path.resolve(filename); 
-    if(ignore[full]) {
-      return originalRequire(module, filename);
+    // Check if it needs to be ignored
+    for(var i = 0; i < ignore.length; i++) {
+      if(full.match(ignore[i]) != null) {
+        return originalRequire(module, filename);  
+      }
     }
-    
+
     // If any of the parents of the file are to be ignored
     do {
       full = path.dirname(full);
 
-      if(ignore[full]) {
-        return originalRequire(module, filename);
+      // Check if it needs to be ignored
+      for(var i = 0; i < ignore.length; i++) {
+        if(full.match(ignore[i]) != null) {
+          return originalRequire(module, filename);  
+        }
       }
     } while(full !== path.dirname(full));
 
