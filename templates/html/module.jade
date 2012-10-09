@@ -16,6 +16,10 @@ html
       background-color: lightgreen;
     }
 
+    .selected_lines {
+      background-color: lightblue;
+    }
+
     .index {
       background-color: lightgray;
     }
@@ -129,8 +133,44 @@ html
   script!="var coverage_data = " + data_json_string
   script!="var sources = " + sources_json_string
   script
+    var current_selected_positions = [];
+
     function show_covering_methods(index) {
-      console.log("============== show_covering_methods :: " + index);
+      if(current_selected_positions.length < 2) {
+        current_selected_positions.push(index);
+      }
+
+      // We have a range of values
+      if(current_selected_positions.length == 2) {
+        current_selected_positions = current_selected_positions.sort(function(a, b) { return a >= b; });
+        // Unpack the start and end
+        var start = current_selected_positions[0];
+        var end = current_selected_positions[1];
+        // Select all the lines of code and set the color
+        for(var i = start; i <= end; i++) {
+          $('#_line_' + i).addClass("selected_lines");
+        }
+
+        var identified_tests = [];
+        // Locate all the tests that cover any of these lines
+        for(var i = 0; i < coverage_data.length; i++) {
+          var coverage = coverage_data[i].data.stats.seen_lines;
+          // check if the test touches the lines indicated
+          for(var j = 0; j < coverage.length; j++) {
+            var key = coverage[j].s;
+            if(key >= start && key <= end) {
+              identified_tests.push(coverage_data[i]);
+              break;
+            }
+          }
+        }
+
+        // Reset the current selection
+        current_selected_positions = [];
+
+        // Any covering tests
+        console.log(identified_tests);
+      }
     }
 
     function show_coverage(_input_id, _test_file, _test_method) {

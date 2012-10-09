@@ -8,7 +8,7 @@
   
   module.exports = {};
   module.exports.register = function(filename) {
-    return coverageStore[filename] = coverageStore[filename] || {nodes: {}, blocks: {}};        
+    return coverageStore[filename] = coverageStore[filename] || {nodes: {}, blocks: {}};
   }
   
   module.exports.getStore = function(filename) {
@@ -30,8 +30,21 @@
         allCoverageDataDiffs[filename].push(diffCoverage);
         return diffCoverage;
       } else {
-        var previousDiff = allCoverageDataDiffs[filename][allCoverageDataDiffs[filename].length - 1];
-        var diffCoverage = {nodes:{}, blocks:{}};
+        // Merge all previous diffs
+        var previousDiff = {nodes:{}, blocks:{}};
+        for(var i = 0; i < allCoverageDataDiffs[filename].length; i++) {
+          var _diff = allCoverageDataDiffs[filename][i];
+          // Go over the nodes
+          for(var key in _diff.nodes) {
+            if(previousDiff.nodes[key] == null)
+              previousDiff.nodes[key] = _diff.nodes[key];
+          }
+
+          for(var key in _diff.blocks) {
+            if(previousDiff.blocks[key] == null)
+              previousDiff.blocks[key] = _diff.blocks[key];
+          }
+        }
 
         for(var key in coverage.nodes) {
           if(previousDiff.nodes[key] == null) {
@@ -60,20 +73,8 @@
   /**
    * Reset all the counters
    **/
-  module.exports.reset = function() {
-    // coverageStore["/Users/ck/coding/projects/rcover/test/nodeunit/library.js"].nodes({})
-
-    // var keys = Object.keys(coverageStore);
-    // for(var i = 0; i < keys.length; i++) {
-    //   for(key in coverageStore[keys[i]].nodes) {
-    //     coverageStore[keys[i]].nodes[key].count = 0;
-    //     // delete coverageStore[keys[i]].nodes[key]['index'];
-    //   }
-
-    //   for(key in coverageStore[keys[i]].blocks) {
-    //     coverageStore[keys[i]].blocks[key].count = 0;
-    //     // delete coverageStore[keys[i]].nodes[key]['index'];
-    //   }
-    // }
+  module.exports.reset = function(filename) {
+    // delete coverageStore[filename];
+    delete allCoverageDataDiffs[filename];
   }
 })();

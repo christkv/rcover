@@ -43,10 +43,13 @@ var final_files = argv.paths.split(/\,/).map(function(m) {
   return file; 
 });
 
+var ignore = [];
 // Map the ignore files
-var ignore = argv.ignore.split(/\,/).map(function(m) { 
-  return m.trim();
-});
+if(Array.isArray(argv.ignore)) {
+  ignore = argv.ignore.split(/\,/).map(function(m) { 
+    return m.trim();
+  });  
+}
 
 // Allright we have a valid type build the correct object
 // to run the cover test

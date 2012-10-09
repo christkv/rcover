@@ -11,10 +11,8 @@ exports.tearDown = function(callback) {
 }
 
 exports['Simple nodeunit test one'] = function(test) {
-  // var a = new A(true);
-  // a.run();
-  // test.done();
-  // var a = 1
+  var a = new A(true);
+  a.run();
   test.done();
 }
 
@@ -30,7 +28,9 @@ exports['Simple nodeunit test two'] = function(test) {
 exports['Simple nodeunit test three'] = function(test) {
   // var C = require('./library2').C
   // var c = new C();
-  // var b = new B(false);
+  var b = new B(false);
+  b.reset()
+  // var a = new A(true);
   // var b = new B(a);
   // b.reset();
   test.done();

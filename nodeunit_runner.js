@@ -13,8 +13,6 @@ var fs = require('fs')
  * Execute cover
  *************************************************************/
 var ignore_regexps = [/node_modules/];
-// ignore_paths[__dirname + "/node_modules"] = true;
-
 var config = {
     debugDirectory: null
   , ignore: ignore_regexps
@@ -55,6 +53,8 @@ var NodeunitRunner = function NodeunitRunner(paths, ignore, method, options) {
     config.ignore = config.ignore.concat(this.paths);
   }
 
+  // Save the config
+  this.config = config;
   // Set up the coverage
   coverage = cover(config.regexp, config.ignore, config.debugDirectory);
   // Get the test runner used
@@ -138,7 +138,6 @@ var _run = function _run(self, files, method, config) {
         try {
           // Get the transformed measure
           var measures = transformCoverageData(coverageData, config);
-
           // Lookup the belonging file for this test
           for(var key in testsByFile) {
             if(testsByFile[key].indexOf(name) != null) {
@@ -165,6 +164,9 @@ var _run = function _run(self, files, method, config) {
               break;              
             }
           }
+
+          // var pathToCoverageStore = path.resolve(path.resolve(__dirname), "coverage_store.js").replace(/\\/g, "/");
+          // var coverageStore = require(pathToCoverageStore);
 
           // Reload all the modules we have coverage about to ensure correct behavior
           for(var reloadModule in coverageData) {
@@ -253,6 +255,7 @@ var _report = function _report(self, config) {
       }      
     }
 
+    // Render the module
     jade.renderFile(__dirname + "/templates/html/module.jade", 
       { pretty: true, 
         debug: false, 

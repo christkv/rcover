@@ -43,8 +43,13 @@ var cover = function(fileRegex, ignore, debugDirectory) {
   require.extensions['.js'] = function(module, filename) {
     filename = filename.replace(/\\/g, "/");
 
-    if(!match.test(filename)) return originalRequire(module, filename);
-    if(filename === pathToCoverageStore) return originalRequire(module, filename);
+    if(!match.test(filename)) {
+      return originalRequire(module, filename);
+    }
+
+    if(filename === pathToCoverageStore) {
+      return originalRequire(module, filename);
+    }
     
     // If the specific file is to be ignored
     var full = path.resolve(filename); 
@@ -58,7 +63,6 @@ var cover = function(fileRegex, ignore, debugDirectory) {
     // If any of the parents of the file are to be ignored
     do {
       full = path.dirname(full);
-
       // Check if it needs to be ignored
       for(var i = 0; i < ignore.length; i++) {
         if(full.match(ignore[i]) != null) {
